@@ -16,7 +16,7 @@ import {
   express,
   aws,
   mui,
-  
+
   gsap,
   framer,
   figma,
@@ -32,11 +32,12 @@ import {
   firstTestimonial,
   secondTestimonial,
   thirdTestimonial,
+
 } from '../assets'
 
 
 // Import Tekisky separately
-import tekisky from "../assets/company/tekisky.png";
+import tekisky from "../assets/company/softhrive.png";
 
 
 export const navLinks = [
@@ -45,7 +46,7 @@ export const navLinks = [
   {
     id: "about",
     title: "About",
-    
+
   },
   {
     id: "work",
@@ -102,7 +103,7 @@ const technologies = [
     icon: framer,
   },
 
- 
+
   {
     name: "Three JS",
     icon: threejs,
@@ -148,21 +149,22 @@ const technologies = [
     name: "git",
     icon: git,
   },
- 
+
+
 
 ];
 
 const experiences = [
   {
-    title: "Full-Stack Developer",
-    company_name: "Tekisky",
+    title: "Flutter Developer Intern",
+    company_name: "Softhrive",
     icon: tekisky,
     iconBg: "#383E56",
-    date: "Jan 2023 - present",
+    date: "May 2025 - present",
     points: [
-      "Developing and maintaining web applications using MERN technologies.",
+      "Developing and maintaining mobile applications using Flutter.",
       "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
-      "Implementing responsive design and ensuring cross-browser compatibility.",
+      "Integrated REST APIs, Firebase, and local databases to ensure seamless data flow and real-time functionality.",
       "Participating in code reviews and providing constructive feedback to other developers.",
     ],
   },
@@ -171,7 +173,7 @@ const experiences = [
 const testimonials = [
   {
     testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Huzaif proved me wrong.",
+      "I thought it was impossible to make a app as beautiful as our product, but Taha proved me wrong.",
     name: "MD Mustaqeem",
     designation: "Ecommerce",
     company: "QuickMart",
@@ -179,15 +181,15 @@ const testimonials = [
   },
   {
     testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Huzaif does.",
-    name: "Abdul Raheman",
+      "I've never met a Flutter developer who truly cares about their clients' success like Taha does.",
+    name: "Abdul Rehman",
     designation: "Ecommerce Business",
     company: "justbuyz",
     image: secondTestimonial,
   },
   {
     testimonial:
-      "After Huzaif optimized our website, our traffic increased by 50%. We can't thank them enough!",
+      "After Taha optimized our app, our traffic increased by 50%. We can't thank them enough!",
     name: "James Wang",
     designation: "CTO",
     company: "456 Enterprises",
@@ -197,46 +199,46 @@ const testimonials = [
 
 const projects = [
   {
-    name: "Tekisky Mart",
+    name: "Mentor App",
     description:
-      "Tekisky Mart is a web-based platform that allows users to search, explore, and purchase a wide range of products from various providers, offering a seamless and efficient shopping experience.",
+      "Prener Mentor is a guidance app that connects learners with mentors. With the help of the app, you can get the right mentorship and achieve your goals. It creates a supportive environment where learning becomes easier and growth more attainable.",
     tags: [
       {
-        name: "react",
+        name: "dart",
         color: "blue-text-gradient",
       },
       {
-        name: "tailwind",
+        name: "cross-platform",
         color: "white-text-gradient",
       },
       {
-        name: "node",
+        name: "firebase",
         color: "pink-text-gradient",
       },
       {
-        name: "mongodb",
+        name: "bloc",
         color: "green-text-gradient",
       },
- 
+
     ],
     image: project2,
     source_code_link: "https://github.com/",
   },
   {
-    name: "GearXpert",
+    name: "Travel App",
     description:
-      "GearXpert is your ultimate destination for premium auto parts and accessories, Whether you're an automobile enthusiast or a professional, find everything you need to upgrade, repair.",
+      "A cross-platform travel app built with Flutter that helps users explore destinations, book trips, and plan journeys with ease. It offers a smooth interface, real-time updates, and personalized recommendations to make travel simpler and more enjoyable.",
     tags: [
       {
-        name: "react",
+        name: "dart",
         color: "blue-text-gradient",
       },
       {
-        name: "emailJs",
+        name: "riverpod",
         color: "green-text-gradient",
       },
       {
-        name: "Gsap",
+        name: "firebase",
         color: "pink-text-gradient",
       },
     ],
@@ -244,26 +246,23 @@ const projects = [
     source_code_link: "https://github.com/",
   },
   {
-    name: "GoGroove-Ecommerce",
+    name: "Resume Maker App",
     description:
-      "Go-Groove is your ultimate destination for premium products across various categories. Whether you're a savvy shopper or a professional, enhance, and simplify your lifestyle—all in one place!",
+      "A Resume Maker app developed with Flutter that allows users to create professional resumes quickly and easily. With customizable templates, user-friendly design, and export options, the app helps job seekers build polished resumes in minutes.",
     tags: [
       {
-        name: "react",
+        name: "dart",
         color: "blue-text-gradient",
       },
       {
-        name: "express",
+        name: "cross-platform",
         color: "white-text-gradient",
       },
       {
-        name: "node",
+        name: "riverpod",
         color: "green-text-gradient",
       },
-      {
-        name: "mongodb",
-        color: "green-text-gradient",
-      },
+
     ],
     image: project3,
     source_code_link: "https://github.com/",
