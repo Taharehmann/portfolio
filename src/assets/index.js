@@ -28,7 +28,8 @@ import tailwind from "./tech/tailwind.png";
 import threejs from "./tech/threejs.svg";
 import firstTestimonial from './Tars Ken.webp';
 import secondTestimonial from './image.webp';
-import thirdTestimonial from './third testimonial.webp'
+import thirdTestimonial from './third testimonial.webp';
+import tahaHero from './taha-hero.jpg';
 
 export {
   logo,
@@ -62,5 +63,5 @@ export {
   redux,
   tailwind,
   threejs,
-
+  tahaHero,
 };

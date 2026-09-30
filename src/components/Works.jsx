@@ -1,120 +1,91 @@
 import React, { useEffect, useRef } from "react";
-import { Tilt } from "react-tilt";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { styles } from "../styles";
-import { github } from "../assets";
 import { SectionWrapper } from "../hoc";
 import { projects } from "../constants";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
-const ProjectCard = ({
-  index,
-  name,
-  description,
-  tags,
-  image,
-  source_code_link,
-}) => {
-  const cardRef = useRef(null);
+const EmptyProjectSlot = ({ index }) => {
+  const slotRef = useRef(null);
 
   useEffect(() => {
-    const el = cardRef.current;
-
-    // ScrollTrigger for animating project cards with stagger
     gsap.fromTo(
-      el,
-      {
-        opacity: 0,
-        y: 100, // Start off-screen
-      },
+      slotRef.current,
+      { opacity: 0, y: 80, scale: 0.9 },
       {
         opacity: 1,
         y: 0,
+        scale: 1,
+        duration: 1,
+        delay: index * 0.15,
+        ease: "power3.out",
         scrollTrigger: {
-          trigger: el,
-          start: "top bottom",  // Trigger when the top of the element hits the bottom of the viewport
-          end: "top center",    // End when the top reaches the center of the viewport
-          scrub: true,          // Smoothly sync scroll and animation
-          markers: false,       // Set to `true` to see debug markers
+          trigger: slotRef.current,
+          start: "top 90%",
+          toggleActions: "play none none reverse",
         },
       }
     );
-  }, []);
+  }, [index]);
 
   return (
-    <div ref={cardRef}>
-      <Tilt
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
-        className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
-      >
-        <div className="relative w-full h-[230px]">
-          <img
-            src={image}
-            alt="project_image"
-            className="w-full h-full object-cover object-left rounded-2xl"
-          />
-
-          <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-            <div
-              onClick={() => window.open(source_code_link, "_blank")}
-              className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
-            >
-              <img
-                src={github}
-                alt="source code"
-                className="w-1/2 h-1/2 object-contain"
-              />
-            </div>
-          </div>
+    <div ref={slotRef} className="project-slot">
+      <div className="project-slot-inner">
+        <div className="project-slot-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
         </div>
-
-        <div className="mt-5">
-          <h3 className="text-white font-bold text-[24px]">{name}</h3>
-          <p className="mt-2 text-secondary text-[14px]">{description}</p>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <p
-              key={`${name}-${tag.name}`}
-              className={`text-[14px] ${tag.color}`}
-            >
-              #{tag.name}
-            </p>
-          ))}
-        </div>
-      </Tilt>
+        <h3 className="text-white text-[20px] font-bold mt-4">Coming Soon</h3>
+        <p className="text-secondary text-[14px] mt-2 text-center">
+          New project being prepared
+        </p>
+        <div className="project-slot-pulse" />
+      </div>
     </div>
   );
 };
 
 const Works = () => {
+  const headerRef = useRef(null);
+  const descRef = useRef(null);
+
   useEffect(() => {
-    // Stagger effect for project cards
     gsap.fromTo(
-      ".project-card", // Select all project cards
+      headerRef.current,
+      { opacity: 0, x: -60 },
       {
-        opacity: 0,
-        y: 100,
-      },
+        opacity: 1,
+        x: 0,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        },
+      }
+    );
+
+    gsap.fromTo(
+      descRef.current,
+      { opacity: 0, y: 40 },
       {
         opacity: 1,
         y: 0,
-        stagger: 0.1, // Stagger delay of 0.3 seconds between each card
+        duration: 1,
+        delay: 0.2,
+        ease: "power3.out",
         scrollTrigger: {
-          trigger: ".works-container",
-          start: "top bottom",  // Trigger when the top of the container reaches the bottom
-          end: "top center",
-          scrub: true,
-          markers: false, // Set to true to see debug markers
+          trigger: descRef.current,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
         },
       }
     );
@@ -122,26 +93,37 @@ const Works = () => {
 
   return (
     <>
-      <div>
+      <div ref={headerRef}>
         <p className={`${styles.sectionSubText}`}>My work</p>
         <h2 className={`${styles.sectionHeadText}`}>Projects.</h2>
       </div>
 
-      <div className="w-full flex">
+      <div className="w-full flex" ref={descRef}>
         <p className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]">
-          Following projects showcase my skills and experience through real-world examples of my work. Each project is briefly described with links to code repositories and live demos. It reflects my ability to solve complex problems, work with different technologies, and manage projects effectively.
+          Following projects showcase my skills and experience through real-world
+          examples of my work. Each project is briefly described with links to code
+          repositories and live demos. It reflects my ability to solve complex
+          problems, work with different technologies, and manage projects
+          effectively.
         </p>
       </div>
 
-      <div className="works-container mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-5">
-        {projects.map((project, index) => (
-          <div key={`project-${index}`} className="project-card">
-            <ProjectCard index={index} {...project} />
-          </div>
-        ))}
+      <div className="works-container mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-7">
+        {projects.length > 0 ? (
+          projects.map((project, index) => (
+            <div key={`project-${index}`} className="project-card">
+              {/* Project cards will render here when projects are added */}
+            </div>
+          ))
+        ) : (
+          // Show "Coming Soon" slots when no projects
+          [0, 1, 2].map((index) => (
+            <EmptyProjectSlot key={`empty-${index}`} index={index} />
+          ))
+        )}
       </div>
     </>
   );
 };
 
-export default SectionWrapper(Works, "");
+export default SectionWrapper(Works, "projects");

@@ -9,19 +9,23 @@ const Computers = () => {
 
   return (
     <mesh>
-      <hemisphereLight intensity={0.15} groundColor="black" />
+      <ambientLight intensity={0.4} />
+      <hemisphereLight intensity={0.3} groundColor="#050816" />
       <spotLight
         position={[-20, 50, 10]}
-        angle={0.12}
+        angle={0.15}
         penumbra={1}
-        intensity={1}
+        intensity={1.2}
         castShadow
         shadow-mapSize={1024}
       />
-      <pointLight intensity={1} />
+      <pointLight intensity={0.8} position={[0, 3, 2]} />
+      {/* Cyber neon rim light for back/side rotation */}
+      <pointLight intensity={1.5} position={[10, 6, -10]} color="#915EFF" />
+      <pointLight intensity={0.8} position={[-10, 4, -8]} color="#00cea8" />
       <primitive
         object={computer.scene}
-        scale={0.75} // Keep scale normal for desktop
+        scale={0.75}
         position={[0, -3.25, -1.5]}
         rotation={[-0.01, -0.2, -0.1]}
       />
@@ -47,7 +51,7 @@ const ComputersCanvas = () => {
   }, []);
 
   return (
-    !isMobile && ( // Hide on mobile screens
+    !isMobile && (
       <Canvas
         frameloop="demand"
         shadows
@@ -60,6 +64,8 @@ const ComputersCanvas = () => {
             enableZoom={false}
             maxPolarAngle={Math.PI / 2}
             minPolarAngle={Math.PI / 2}
+            autoRotate
+            autoRotateSpeed={0.5}
           />
           <Computers />
         </Suspense>
