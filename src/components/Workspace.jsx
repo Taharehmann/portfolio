@@ -13,6 +13,25 @@ const Workspace = () => {
   const descRef = useRef(null);
   const canvasWrapperRef = useRef(null);
   const statsRef = useRef(null);
+  const isDragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+
+  const handlePointerDown = (e) => {
+    isDragging.current = true;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    window.dispatchEvent(new CustomEvent("workspace-model-rotate", { detail: { dx, dy } }));
+  };
+
+  const handlePointerUp = () => {
+    isDragging.current = false;
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -135,14 +154,21 @@ const Workspace = () => {
         className="workspace-canvas-wrapper mt-8 sm:mt-12"
         style={{ perspective: "1000px" }}
       >
-        <div className="workspace-canvas-frame">
+        <div
+          className="workspace-canvas-frame cursor-grab active:cursor-grabbing select-none"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+          style={{ touchAction: "pan-y" }}
+        >
           {/* Decorative corner accents */}
           <div className="workspace-corner workspace-corner-tl" />
           <div className="workspace-corner workspace-corner-tr" />
           <div className="workspace-corner workspace-corner-bl" />
           <div className="workspace-corner workspace-corner-br" />
 
-          <div className="w-full h-[260px] xs:h-[320px] sm:h-[450px] md:h-[550px] lg:h-[600px] flex items-center justify-center pointer-events-none">
+          <div className="w-full h-[260px] xs:h-[320px] sm:h-[450px] md:h-[550px] lg:h-[600px] flex items-center justify-center">
             {/* The 3D Desktop Computer from Scroll3DScene aligns seamlessly here */}
           </div>
 
@@ -153,7 +179,7 @@ const Workspace = () => {
               <path d="M2 12h20" />
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10" />
             </svg>
-            <span>Scroll to navigate & animate 3D scene</span>
+            <span>Drag horizontally to rotate 3D model • Scroll to animate</span>
           </div>
         </div>
       </div>

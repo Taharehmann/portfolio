@@ -843,6 +843,12 @@
   user-select: none;
 }
 
+@media (max-width: 1023px) {
+  .moto-scroll-hud {
+    display: none !important;
+  }
+}
+
 .moto-hud-track {
   width: 3px;
   height: 180px;
