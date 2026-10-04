@@ -773,6 +773,15 @@
   pointer-events: none;
 }
 
+@media (max-width: 640px) {
+  .workspace-hint {
+    bottom: 12px;
+    padding: 6px 14px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+}
+
 @keyframes hintFade {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }

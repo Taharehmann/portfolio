@@ -13,25 +13,6 @@ const Workspace = () => {
   const descRef = useRef(null);
   const canvasWrapperRef = useRef(null);
   const statsRef = useRef(null);
-  const isDragging = useRef(false);
-  const lastPos = useRef({ x: 0, y: 0 });
-
-  const handlePointerDown = (e) => {
-    isDragging.current = true;
-    lastPos.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handlePointerMove = (e) => {
-    if (!isDragging.current) return;
-    const dx = e.clientX - lastPos.current.x;
-    const dy = e.clientY - lastPos.current.y;
-    lastPos.current = { x: e.clientX, y: e.clientY };
-    window.dispatchEvent(new CustomEvent("workspace-model-rotate", { detail: { dx, dy } }));
-  };
-
-  const handlePointerUp = () => {
-    isDragging.current = false;
-  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -75,22 +56,19 @@ const Workspace = () => {
         canvasWrapperRef.current,
         {
           opacity: 0,
-          scale: 0.7,
-          rotateY: -15,
-          y: 60,
+          scale: 0.85,
+          y: 50,
         },
         {
           opacity: 1,
           scale: 1,
-          rotateY: 0,
           y: 0,
-          duration: 1.5,
+          duration: 1.2,
           ease: "power3.out",
           scrollTrigger: {
             trigger: canvasWrapperRef.current,
             start: "top 85%",
-            end: "top 30%",
-            scrub: 0.8,
+            toggleActions: "play none none reverse",
           },
         }
       );
@@ -148,28 +126,21 @@ const Workspace = () => {
         ))}
       </div>
 
-      {/* 3D Computer Canvas */}
+      {/* 3D Computer Canvas inside Workspace Section */}
       <div
         ref={canvasWrapperRef}
         className="workspace-canvas-wrapper mt-8 sm:mt-12"
-        style={{ perspective: "1000px" }}
       >
-        <div
-          className="workspace-canvas-frame cursor-grab active:cursor-grabbing select-none"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
-          style={{ touchAction: "pan-y" }}
-        >
+        <div className="workspace-canvas-frame relative w-full">
           {/* Decorative corner accents */}
           <div className="workspace-corner workspace-corner-tl" />
           <div className="workspace-corner workspace-corner-tr" />
           <div className="workspace-corner workspace-corner-bl" />
           <div className="workspace-corner workspace-corner-br" />
 
-          <div className="w-full h-[260px] xs:h-[320px] sm:h-[450px] md:h-[550px] lg:h-[600px] flex items-center justify-center">
-            {/* The 3D Desktop Computer from Scroll3DScene aligns seamlessly here */}
+          {/* Canvas Viewport */}
+          <div className="w-full h-[320px] xs:h-[380px] sm:h-[460px] md:h-[540px] lg:h-[600px] flex items-center justify-center relative overflow-hidden">
+            <ComputersCanvas />
           </div>
 
           {/* Interactive hint */}
@@ -179,7 +150,7 @@ const Workspace = () => {
               <path d="M2 12h20" />
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10" />
             </svg>
-            <span>Drag horizontally to rotate 3D model • Scroll to animate</span>
+            <span>Drag horizontally to rotate 3D model • Interactive 360°</span>
           </div>
         </div>
       </div>

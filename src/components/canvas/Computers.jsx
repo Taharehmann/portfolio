@@ -4,29 +4,49 @@ import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
-const Computers = () => {
+const Computers = ({ isMobile, isTablet }) => {
   const computer = useGLTF("./desktop_pc/scene.gltf");
+
+  // Dynamic responsive scaling and positioning perfectly centered in canvas frame
+  const scale = isMobile ? 0.68 : isTablet ? 0.76 : 0.84;
+  const position = isMobile
+    ? [0, -1.1, -1.0]
+    : isTablet
+    ? [0, -1.5, -1.2]
+    : [0, -1.8, -1.3];
 
   return (
     <mesh>
-      <ambientLight intensity={0.4} />
-      <hemisphereLight intensity={0.3} groundColor="#050816" />
+      {/* Balanced 360-degree ambient and hemisphere lights */}
+      <ambientLight intensity={1.3} />
+      <hemisphereLight intensity={0.9} groundColor="#151030" />
+
+      {/* Main key spotlight */}
       <spotLight
-        position={[-20, 50, 10]}
-        angle={0.15}
+        position={[-10, 30, 20]}
+        angle={0.3}
         penumbra={1}
-        intensity={1.2}
+        intensity={2.2}
         castShadow
         shadow-mapSize={1024}
       />
-      <pointLight intensity={0.8} position={[0, 3, 2]} />
-      {/* Cyber neon rim light for back/side rotation */}
-      <pointLight intensity={1.5} position={[10, 6, -10]} color="#915EFF" />
-      <pointLight intensity={0.8} position={[-10, 4, -8]} color="#00cea8" />
+
+      {/* Directional lights for full clarity from front, sides, and top */}
+      <directionalLight position={[10, 15, 10]} intensity={1.8} />
+      <directionalLight position={[-10, 15, -10]} intensity={1.4} />
+      <directionalLight position={[0, 15, -15]} intensity={1.2} />
+
+      {/* Point lights for vibrant cyber-neon RGB glows */}
+      <pointLight intensity={2.0} position={[0, 3, 3]} />
+      <pointLight intensity={3.0} position={[8, 5, -5]} color="#915EFF" />
+      <pointLight intensity={2.5} position={[-8, 4, -4]} color="#00cea8" />
+      <pointLight intensity={2.0} position={[0, -1, 3]} color="#BF61FF" />
+      <pointLight intensity={2.2} position={[0, 4, -6]} color="#7c8fff" />
+
       <primitive
         object={computer.scene}
-        scale={0.75}
-        position={[0, -3.25, -1.5]}
+        scale={scale}
+        position={position}
         rotation={[-0.01, -0.2, -0.1]}
       />
     </mesh>
@@ -34,44 +54,54 @@ const Computers = () => {
 };
 
 const ComputersCanvas = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
+  const [screenSize, setScreenSize] = useState({
+    isMobile: typeof window !== "undefined" ? window.innerWidth <= 640 : false,
+    isTablet:
+      typeof window !== "undefined"
+        ? window.innerWidth > 640 && window.innerWidth <= 1024
+        : false,
+  });
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 500px)");
-    
-    const handleMediaQueryChange = (event) => {
-      setIsMobile(event.matches);
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setScreenSize({
+        isMobile: width <= 640,
+        isTablet: width > 640 && width <= 1024,
+      });
     };
 
-    mediaQuery.addEventListener("change", handleMediaQueryChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange);
-    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    !isMobile && (
-      <Canvas
-        frameloop="demand"
-        shadows
-        dpr={[1, 2]}
-        camera={{ position: [20, 3, 5], fov: 25 }}
-        gl={{ preserveDrawingBuffer: true }}
-      >
-        <Suspense fallback={<CanvasLoader />}>
-          <OrbitControls
-            enableZoom={false}
-            maxPolarAngle={Math.PI / 2}
-            minPolarAngle={Math.PI / 2}
-            autoRotate
-            autoRotateSpeed={0.5}
-          />
-          <Computers />
-        </Suspense>
-        <Preload all />
-      </Canvas>
-    )
+    <Canvas
+      shadows
+      dpr={[1, 2]}
+      camera={{
+        position: [20, 3, 5],
+        fov: screenSize.isMobile ? 28 : 25,
+      }}
+      gl={{ preserveDrawingBuffer: true, antialias: true, alpha: true }}
+      className="w-full h-full cursor-grab active:cursor-grabbing"
+    >
+      <Suspense fallback={<CanvasLoader />}>
+        <OrbitControls
+          enableZoom={false}
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2}
+          autoRotate
+          autoRotateSpeed={2.5}
+          enablePan={false}
+        />
+        <Computers
+          isMobile={screenSize.isMobile}
+          isTablet={screenSize.isTablet}
+        />
+      </Suspense>
+      <Preload all />
+    </Canvas>
   );
 };
 

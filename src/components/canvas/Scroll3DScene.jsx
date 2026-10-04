@@ -49,131 +49,7 @@ const CosmicStars = ({ scrollProgress, mouse }) => {
   );
 };
 
-// 3D Computer Desktop Rig - Starts at Introduction (About) section, NOT Landing page
-const ScrollComputer = ({ scrollProgress, mouse, isMobile, dragRotation }) => {
-  const groupRef = useRef();
-  const computer = useGLTF("./desktop_pc/scene.gltf");
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-    const progress = scrollProgress.current; // 0 to 1
-
-    let targetX = 0;
-    let targetY = -24;
-    let targetZ = -3;
-    let targetRotX = 0;
-    let targetRotY = -0.2;
-    let targetRotZ = 0;
-    let targetScale = 0.001;
-
-    // Stage 1: Landing page (Hero) -> Desktop PC stays hidden below the screen
-    if (progress < 0.16) {
-      targetX = isMobile ? 0 : 1.5;
-      targetY = -24;
-      targetZ = -3;
-      targetRotY = -0.2;
-      targetRotX = 0;
-      targetScale = 0.001;
-    }
-    // Stage 2: Emerges smoothly as user reaches the Introduction (About) section
-    else if (progress < 0.32) {
-      const t = (progress - 0.16) / 0.16;
-      const easeT = THREE.MathUtils.smoothstep(t, 0, 1);
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 1.5, isMobile ? 0 : 2.4, easeT);
-      targetY = THREE.MathUtils.lerp(-24, isMobile ? -2.4 : -2.8, easeT);
-      targetZ = THREE.MathUtils.lerp(-3, isMobile ? -0.6 : -0.8, easeT);
-      targetRotY = THREE.MathUtils.lerp(-0.6, isMobile ? 0.15 : 0.25, easeT);
-      targetRotX = THREE.MathUtils.lerp(-0.1, isMobile ? 0.03 : 0.04, easeT);
-      targetScale = THREE.MathUtils.lerp(0.001, isMobile ? 0.48 : 0.72, easeT);
-    }
-    // Stage 3: In Introduction towards Workspace
-    else if (progress < 0.46) {
-      const t = (progress - 0.32) / 0.14;
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 2.4, isMobile ? 0 : 1.2, t);
-      targetY = THREE.MathUtils.lerp(isMobile ? -2.4 : -2.8, isMobile ? -2.1 : -3.0, t);
-      targetZ = THREE.MathUtils.lerp(isMobile ? -0.6 : -0.8, isMobile ? -0.7 : -1.0, t);
-      targetRotY = THREE.MathUtils.lerp(isMobile ? 0.15 : 0.25, isMobile ? -0.2 : -0.5, t);
-      targetRotX = THREE.MathUtils.lerp(isMobile ? 0.03 : 0.04, -0.02, t);
-      targetScale = THREE.MathUtils.lerp(isMobile ? 0.48 : 0.72, isMobile ? 0.50 : 0.74, t);
-    }
-    // Stage 4: Workspace (0.46 - 0.62) — Epic 360-degree rotating center showcase!
-    else if (progress < 0.62) {
-      const t = (progress - 0.46) / 0.16;
-      targetX = 0;
-      targetY = isMobile ? -2.1 : -3.2;
-      targetZ = THREE.MathUtils.lerp(isMobile ? -0.7 : -1.0, isMobile ? -0.4 : -0.5, t);
-      // Dramatic 360 swoop!
-      targetRotY = THREE.MathUtils.lerp(isMobile ? -0.2 : -0.5, Math.PI * 2 - 0.2, t);
-      targetRotX = THREE.MathUtils.lerp(-0.02, 0.04, Math.sin(t * Math.PI));
-      targetScale = isMobile ? 0.50 : 0.82;
-    }
-    // Stage 5: Sinking into background for Experience & Projects (0.62 - 0.78)
-    else if (progress < 0.78) {
-      const t = (progress - 0.62) / 0.16;
-      targetX = THREE.MathUtils.lerp(0, isMobile ? -0.5 : -1.5, t);
-      targetY = THREE.MathUtils.lerp(isMobile ? -2.1 : -3.2, -22, t);
-      targetZ = THREE.MathUtils.lerp(isMobile ? -0.4 : -0.5, -4, t);
-      targetRotY = THREE.MathUtils.lerp(Math.PI * 2 - 0.2, Math.PI * 2.5, t);
-      targetScale = THREE.MathUtils.lerp(isMobile ? 0.50 : 0.82, 0.001, t);
-    }
-    // Stage 6: Offscreen while Earth is active
-    else {
-      targetY = -30;
-      targetScale = 0.001; // Avoid 0 to prevent NaN bounding radius
-    }
-
-    // Add mouse cursor / touch 3D parallax reaction
-    const mouseOffsetX = mouse.current.x * (isMobile ? 0.14 : 0.25);
-    const mouseOffsetY = mouse.current.y * (isMobile ? 0.10 : 0.18);
-
-    // Interactive drag rotation in Workspace
-    const dragX = dragRotation ? dragRotation.current.x : 0;
-    const dragY = dragRotation ? dragRotation.current.y : 0;
-    if (dragRotation) {
-      dragRotation.current.x = THREE.MathUtils.lerp(dragRotation.current.x, 0, 0.05);
-      dragRotation.current.y = THREE.MathUtils.lerp(dragRotation.current.y, 0, 0.05);
-    }
-
-    // Smooth Lerp (Ultra-silky 60fps)
-    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX + mouseOffsetX, 0.06);
-    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY + mouseOffsetY, 0.06);
-    groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetZ, 0.06);
-
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotX + mouseOffsetY * 0.15 + dragX, 0.06);
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY + mouseOffsetX * 0.2 + dragY, 0.06);
-    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotZ, 0.06);
-
-    const s = THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.06);
-    groupRef.current.scale.set(s, s, s);
-  });
-
-  return (
-    <group ref={groupRef} position={[isMobile ? 0 : 1.5, -24, -3]}>
-      <mesh>
-        <ambientLight intensity={0.7} />
-        <hemisphereLight intensity={0.5} groundColor="#050816" />
-        <spotLight
-          position={[-15, 40, 15]}
-          angle={0.25}
-          penumbra={1}
-          intensity={1.8}
-          castShadow
-          shadow-mapSize={1024}
-        />
-        <pointLight intensity={1.5} position={[0, 4, 3]} />
-        {/* Cyber Neon Glows */}
-        <pointLight intensity={2.5} position={[8, 5, -6]} color="#915EFF" />
-        <pointLight intensity={2.0} position={[-8, 4, -4]} color="#00cea8" />
-        <pointLight intensity={1.5} position={[0, -2, 2]} color="#BF61FF" />
-        {/* Fill light for back/side rotation */}
-        <pointLight intensity={1.8} position={[0, 3, -6]} color="#7c8fff" />
-        <primitive object={computer.scene} position={[0, 0, 0]} />
-      </mesh>
-    </group>
-  );
-};
-
-// 3D Earth Globe with planetary rise animation & lighting
+// 3D Earth Globe with planetary rise animation & lighting for Contact section
 const ScrollEarth = ({ scrollProgress, mouse, isMobile }) => {
   const earthRef = useRef();
   const earth = useGLTF("./planet/scene.gltf");
@@ -221,7 +97,7 @@ const ScrollEarth = ({ scrollProgress, mouse, isMobile }) => {
 };
 
 // Main Scene Controller & Camera with Dynamic Trajectory + Mouse Parallax
-const SceneContent = ({ scrollProgress, mouse, isMobile, dragRotation, calculateProgress }) => {
+const SceneContent = ({ scrollProgress, mouse, isMobile, calculateProgress }) => {
   useFrame((state) => {
     // Dynamic FOV for portrait/mobile vs desktop
     const targetFov = isMobile ? 38 : 25;
@@ -237,47 +113,25 @@ const SceneContent = ({ scrollProgress, mouse, isMobile, dragRotation, calculate
     const progress = scrollProgress.current;
 
     // Cinematic camera trajectory on scroll
-    let targetCamX = isMobile ? 12 : 18;
-    let targetCamY = isMobile ? 2.6 : 3.2;
-    let targetCamZ = isMobile ? 5.2 : 5.5;
+    let targetCamX = 0;
+    let targetCamY = 0;
+    let targetCamZ = 6;
     let lookX = 0;
-    let lookY = isMobile ? -1.0 : -1.2;
+    let lookY = 0;
     let lookZ = 0;
 
-    if (progress < 0.20) {
-      const t = progress / 0.20;
-      targetCamX = THREE.MathUtils.lerp(isMobile ? 12 : 18, isMobile ? 11 : 16, t);
-      targetCamY = THREE.MathUtils.lerp(isMobile ? 2.6 : 3.2, isMobile ? 2.5 : 3.0, t);
-      targetCamZ = THREE.MathUtils.lerp(isMobile ? 5.2 : 5.5, isMobile ? 5.5 : 6.2, t);
-      lookX = 0;
-    } else if (progress < 0.46) {
-      const t = (progress - 0.20) / 0.26;
-      targetCamX = THREE.MathUtils.lerp(isMobile ? 11 : 16, isMobile ? 8 : 11, t);
-      targetCamY = THREE.MathUtils.lerp(isMobile ? 2.5 : 3.0, isMobile ? 3.0 : 3.8, t);
-      targetCamZ = THREE.MathUtils.lerp(isMobile ? 5.5 : 6.2, isMobile ? 5.4 : 5.8, t);
-      lookX = THREE.MathUtils.lerp(isMobile ? 0.2 : 1.0, 0, t);
-    } else if (progress < 0.62) {
-      targetCamX = isMobile ? 8 : 11;
-      targetCamY = isMobile ? 3.0 : 3.8;
-      targetCamZ = isMobile ? 5.4 : 5.8;
-      lookX = 0;
-    } else if (progress < 0.78) {
-      const t = (progress - 0.62) / 0.16;
-      targetCamX = THREE.MathUtils.lerp(isMobile ? 8 : 11, 2, t);
-      targetCamY = THREE.MathUtils.lerp(isMobile ? 3.0 : 3.8, 3.2, t);
-      targetCamZ = THREE.MathUtils.lerp(isMobile ? 5.4 : 5.8, 6.5, t);
-    } else {
-      const t = (progress - 0.78) / 0.22;
-      targetCamX = THREE.MathUtils.lerp(2, isMobile ? -2 : -4, t);
-      targetCamY = THREE.MathUtils.lerp(3.2, 3.0, t);
-      targetCamZ = THREE.MathUtils.lerp(6.5, 6.0, t);
-      lookX = 0;
-      lookY = THREE.MathUtils.lerp(isMobile ? -1.0 : -1.2, 0, t);
+    if (progress > 0.70) {
+      const t = Math.min((progress - 0.70) / 0.22, 1);
+      targetCamX = THREE.MathUtils.lerp(0, isMobile ? 0 : -2.5, t);
+      targetCamY = THREE.MathUtils.lerp(0, isMobile ? 1.5 : 1.2, t);
+      targetCamZ = THREE.MathUtils.lerp(6, 6.2, t);
+      lookX = THREE.MathUtils.lerp(0, isMobile ? 0 : 1.2, t);
+      lookY = THREE.MathUtils.lerp(0, isMobile ? -0.8 : 0, t);
     }
 
     // Mouse / touch parallax
-    const parallaxX = mouse.current.x * (isMobile ? 0.2 : 0.5);
-    const parallaxY = mouse.current.y * (isMobile ? 0.12 : 0.3);
+    const parallaxX = mouse.current.x * (isMobile ? 0.2 : 0.4);
+    const parallaxY = mouse.current.y * (isMobile ? 0.12 : 0.25);
 
     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetCamX + parallaxX, 0.05);
     state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetCamY + parallaxY, 0.05);
@@ -288,12 +142,6 @@ const SceneContent = ({ scrollProgress, mouse, isMobile, dragRotation, calculate
   return (
     <>
       <CosmicStars scrollProgress={scrollProgress} mouse={mouse} />
-      <ScrollComputer
-        scrollProgress={scrollProgress}
-        mouse={mouse}
-        isMobile={isMobile}
-        dragRotation={dragRotation}
-      />
       <ScrollEarth scrollProgress={scrollProgress} mouse={mouse} isMobile={isMobile} />
     </>
   );
@@ -302,7 +150,6 @@ const SceneContent = ({ scrollProgress, mouse, isMobile, dragRotation, calculate
 const Scroll3DScene = () => {
   const scrollProgress = useRef(0);
   const mouse = useRef({ x: 0, y: 0 });
-  const dragRotation = useRef({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
   const [currentSection, setCurrentSection] = useState("Hero");
   const [pct, setPct] = useState(0);
@@ -380,15 +227,6 @@ const Scroll3DScene = () => {
     window.addEventListener("mousemove", handlePointerMove, { passive: true });
     window.addEventListener("touchmove", handlePointerMove, { passive: true });
 
-    // Interactive model rotation listener from Workspace section
-    const handleModelRotate = (e) => {
-      if (e.detail) {
-        dragRotation.current.y += e.detail.dx * 0.007;
-        dragRotation.current.x += e.detail.dy * 0.005;
-      }
-    };
-    window.addEventListener("workspace-model-rotate", handleModelRotate);
-
     const handleScroll = () => {
       const progress = calculateDynamicProgress();
       scrollProgress.current = progress;
@@ -409,19 +247,18 @@ const Scroll3DScene = () => {
       window.removeEventListener("resize", checkMobile);
       window.removeEventListener("mousemove", handlePointerMove);
       window.removeEventListener("touchmove", handlePointerMove);
-      window.removeEventListener("workspace-model-rotate", handleModelRotate);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
     <>
-      {/* Fixed Fullscreen 3D Viewport */}
+      {/* Fixed Fullscreen 3D Viewport for Cosmic Starfield & Earth */}
       <div className="fixed inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
         <Canvas
           shadows
           dpr={[1, 1.5]}
-          camera={{ position: [18, 3.2, 5.5], fov: 25 }}
+          camera={{ position: [0, 0, 6], fov: 25 }}
           gl={{
             preserveDrawingBuffer: true,
             antialias: true,
@@ -434,30 +271,14 @@ const Scroll3DScene = () => {
               scrollProgress={scrollProgress}
               mouse={mouse}
               isMobile={isMobile}
-              dragRotation={dragRotation}
               calculateProgress={calculateDynamicProgress}
             />
           </Suspense>
         </Canvas>
       </div>
 
-      {/* Floating Status Chips Overlay (Desktop only to prevent mobile clutter) */}
+      {/* Floating Status Chips Overlay for Contact Earth (Desktop only) */}
       <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden hidden lg:block">
-        {/* Stage 2 / Introduction chips (Appears when PC emerges in Introduction) */}
-        {pct >= 18 && pct < 46 && (
-          <div className="w-full h-full relative max-w-7xl mx-auto">
-            <div className="absolute top-[28%] right-[15%] inline-flex moto-floating-chip moto-chip-pulse">
-              <span className="moto-chip-dot green" />
-              <span className="moto-chip-text">⚡ Full Stack Architecture</span>
-            </div>
-            <div className="absolute bottom-[24%] right-[25%] inline-flex moto-floating-chip moto-chip-glow">
-              <span className="moto-chip-dot purple" />
-              <span className="moto-chip-text">✨ 3D WebGL & GSAP</span>
-            </div>
-          </div>
-        )}
-
-        {/* Stage 5 / Contact Earth chips */}
         {pct > 68 && (
           <div className="w-full h-full relative max-w-7xl mx-auto">
             <div className="absolute top-[28%] right-[10%] inline-flex moto-floating-chip moto-chip-glow">
