@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
 
 import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
@@ -16,6 +15,7 @@ const Contact = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState({ type: "", message: "" });
 
   const handleChange = (e) => {
     const { target } = e;
@@ -25,43 +25,54 @@ const Contact = () => {
       ...form,
       [name]: value,
     });
+
+    // Clear error message when user starts typing
+    if (status.type === "error") {
+      setStatus({ type: "", message: "" });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setStatus({ type: "", message: "" });
 
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          to_name: "Taha Rehman",
-          from_email: form.email,
-          to_email: "taharehman419@gmail.com",
-          message: form.message,
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      )
-      .then(
-        () => {
-          setLoading(false);
-          alert("Thank you. I will get back to you as soon as possible.");
+        body: JSON.stringify(form),
+      });
 
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-          });
-        },
-        (error) => {
-          setLoading(false);
-          console.error(error);
+      const data = await res.json();
 
-          alert("Ahh, something went wrong. Please try again.");
-        }
-      );
+      if (res.ok && data.success) {
+        setStatus({
+          type: "success",
+          message: "Message sent successfully.",
+        });
+        setForm({
+          name: "",
+          email: "",
+          message: "",
+        });
+      } else {
+        setStatus({
+          type: "error",
+          message: data.error || "Unable to send your message. Please try again.",
+        });
+      }
+    } catch (err) {
+      console.error("Error submitting contact form:", err);
+      setStatus({
+        type: "error",
+        message: "Unable to send your message. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -114,12 +125,27 @@ const Contact = () => {
             />
           </label>
 
-          <button
-            type='submit'
-            className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors duration-300'
-          >
-            {loading ? "Sending..." : "Send"}
-          </button>
+          <div className="flex items-center gap-4 flex-wrap mt-2">
+            <button
+              type='submit'
+              disabled={loading}
+              className={`bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary hover:bg-[#915EFF] transition-colors duration-300 ${
+                loading ? "opacity-60 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Sending..." : "Send"}
+            </button>
+
+            {status.message && (
+              <p
+                className={`text-[14px] font-medium transition-opacity duration-300 ${
+                  status.type === "success" ? "text-emerald-400" : "text-rose-400"
+                }`}
+              >
+                {status.message}
+              </p>
+            )}
+          </div>
         </form>
       </motion.div>
 
