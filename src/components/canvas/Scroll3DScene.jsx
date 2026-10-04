@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Points, PointMaterial } from "@react-three/drei";
+import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 // High-density cosmic starfield with speed warp on scroll
@@ -49,54 +49,7 @@ const CosmicStars = ({ scrollProgress, mouse }) => {
   );
 };
 
-// 3D Earth Globe with planetary rise animation & lighting for Contact section
-const ScrollEarth = ({ scrollProgress, mouse, isMobile }) => {
-  const earthRef = useRef();
-  const earth = useGLTF("./planet/scene.gltf");
-
-  useFrame((state, delta) => {
-    if (!earthRef.current) return;
-    const progress = scrollProgress.current;
-
-    let targetY = -22;
-    let targetX = isMobile ? 0 : 2.4;
-    let targetZ = isMobile ? -3.0 : -1;
-    let targetScale = isMobile ? 1.6 : 2.6;
-
-    if (progress > 0.70) {
-      const t = Math.min((progress - 0.70) / 0.20, 1);
-      targetY = THREE.MathUtils.lerp(-20, isMobile ? -1.8 : 0.0, t);
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 3.5, isMobile ? 0 : 2.2, t);
-      targetZ = THREE.MathUtils.lerp(-3, 0.2, t);
-    }
-
-    const mouseOffsetX = mouse.current.x * (isMobile ? 0.15 : 0.25);
-    const mouseOffsetY = mouse.current.y * (isMobile ? 0.12 : 0.2);
-
-    earthRef.current.position.x = THREE.MathUtils.lerp(earthRef.current.position.x, targetX + mouseOffsetX, 0.06);
-    earthRef.current.position.y = THREE.MathUtils.lerp(earthRef.current.position.y, targetY + mouseOffsetY, 0.06);
-    earthRef.current.position.z = THREE.MathUtils.lerp(earthRef.current.position.z, targetZ, 0.06);
-
-    const s = THREE.MathUtils.lerp(earthRef.current.scale.x, targetScale, 0.06);
-    earthRef.current.scale.set(s, s, s);
-
-    // Continuous majestic rotation
-    earthRef.current.rotation.y += delta * 0.35;
-  });
-
-  return (
-    <group ref={earthRef} position={[isMobile ? 0 : 2.2, -22, 0]}>
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[10, 12, 6]} intensity={2.2} />
-      <pointLight position={[-10, -5, -4]} color="#915EFF" intensity={1.6} />
-      <pointLight position={[5, -8, 2]} color="#00CEA8" intensity={1.2} />
-
-      <primitive object={earth.scene} scale={1} />
-    </group>
-  );
-};
-
-// Main Scene Controller & Camera with Dynamic Trajectory + Mouse Parallax
+// Main Scene Controller & Camera with Mouse Parallax for Starfield
 const SceneContent = ({ scrollProgress, mouse, isMobile, calculateProgress }) => {
   useFrame((state) => {
     // Dynamic FOV for portrait/mobile vs desktop
@@ -110,39 +63,20 @@ const SceneContent = ({ scrollProgress, mouse, isMobile, calculateProgress }) =>
     if (calculateProgress) {
       scrollProgress.current = calculateProgress();
     }
-    const progress = scrollProgress.current;
-
-    // Cinematic camera trajectory on scroll
-    let targetCamX = 0;
-    let targetCamY = 0;
-    let targetCamZ = 6;
-    let lookX = 0;
-    let lookY = 0;
-    let lookZ = 0;
-
-    if (progress > 0.70) {
-      const t = Math.min((progress - 0.70) / 0.22, 1);
-      targetCamX = THREE.MathUtils.lerp(0, isMobile ? 0 : -2.5, t);
-      targetCamY = THREE.MathUtils.lerp(0, isMobile ? 1.5 : 1.2, t);
-      targetCamZ = THREE.MathUtils.lerp(6, 6.2, t);
-      lookX = THREE.MathUtils.lerp(0, isMobile ? 0 : 1.2, t);
-      lookY = THREE.MathUtils.lerp(0, isMobile ? -0.8 : 0, t);
-    }
 
     // Mouse / touch parallax
     const parallaxX = mouse.current.x * (isMobile ? 0.2 : 0.4);
     const parallaxY = mouse.current.y * (isMobile ? 0.12 : 0.25);
 
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetCamX + parallaxX, 0.05);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetCamY + parallaxY, 0.05);
-    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, targetCamZ, 0.05);
-    state.camera.lookAt(lookX, lookY, lookZ);
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, parallaxX, 0.05);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, parallaxY, 0.05);
+    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 6, 0.05);
+    state.camera.lookAt(0, 0, 0);
   });
 
   return (
     <>
       <CosmicStars scrollProgress={scrollProgress} mouse={mouse} />
-      <ScrollEarth scrollProgress={scrollProgress} mouse={mouse} isMobile={isMobile} />
     </>
   );
 };
@@ -237,7 +171,7 @@ const Scroll3DScene = () => {
       else if (progress < 0.62) setCurrentSection("Workspace");
       else if (progress < 0.75) setCurrentSection("Experience");
       else if (progress < 0.85) setCurrentSection("Projects");
-      else setCurrentSection("Global Contact");
+      else setCurrentSection("Contact");
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -253,7 +187,7 @@ const Scroll3DScene = () => {
 
   return (
     <>
-      {/* Fixed Fullscreen 3D Viewport for Cosmic Starfield & Earth */}
+      {/* Fixed Fullscreen 3D Viewport for Cosmic Starfield */}
       <div className="fixed inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
         <Canvas
           shadows
@@ -275,22 +209,6 @@ const Scroll3DScene = () => {
             />
           </Suspense>
         </Canvas>
-      </div>
-
-      {/* Floating Status Chips Overlay for Contact Earth (Desktop only) */}
-      <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden hidden lg:block">
-        {pct > 68 && (
-          <div className="w-full h-full relative max-w-7xl mx-auto">
-            <div className="absolute top-[28%] right-[10%] inline-flex moto-floating-chip moto-chip-glow">
-              <span className="moto-chip-dot green" />
-              <span className="moto-chip-text">🌍 Available Globally</span>
-            </div>
-            <div className="absolute bottom-[24%] right-[22%] inline-flex moto-floating-chip moto-chip-pulse">
-              <span className="moto-chip-dot cyan" />
-              <span className="moto-chip-text">🚀 Fast Global Delivery</span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Moto-Card Style 3D Scroll HUD Indicator (Desktop only) */}

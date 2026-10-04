@@ -66,7 +66,7 @@ const Contact = () => {
 
   return (
     <div
-      className={`xl:mt-12 flex xl:flex-row flex-col-reverse gap-6 sm:gap-10 overflow-hidden`}
+      className={`xl:mt-12 flex lg:flex-row flex-col-reverse gap-6 sm:gap-10 overflow-hidden`}
     >
       <motion.div
         variants={slideIn("left", "tween", 0.2, 1)}
@@ -125,25 +125,9 @@ const Contact = () => {
 
       <motion.div
         variants={slideIn("right", "tween", 0.2, 1)}
-        className='xl:flex-1 xl:h-auto md:h-[450px] min-h-[140px] flex flex-col justify-between py-2 sm:py-6 px-1 sm:px-2 pointer-events-none'
+        className='lg:flex-1 lg:h-auto md:h-[540px] sm:h-[440px] h-[380px]'
       >
-        <div className="flex flex-col gap-3 pointer-events-auto">
-          <div className="moto-floating-chip self-start">
-            <span className="moto-chip-dot green" />
-            <span className="moto-chip-text">📍 Coordinates: Global / Remote</span>
-          </div>
-          <div className="moto-floating-chip self-start">
-            <span className="moto-chip-dot cyan" />
-            <span className="moto-chip-text">⚡ Status: Open for Full-Stack Opportunities</span>
-          </div>
-        </div>
-
-        <div className="mt-4 sm:mt-auto pointer-events-auto flex flex-col gap-3">
-          <div className="moto-floating-chip self-start sm:self-end">
-            <span className="moto-chip-dot purple" />
-            <span className="moto-chip-text">🌐 Worldwide Delivery & Collaboration</span>
-          </div>
-        </div>
+        <EarthCanvas />
       </motion.div>
     </div>
   );

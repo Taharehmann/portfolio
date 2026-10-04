@@ -158,9 +158,9 @@ const technologies = [
 const experiences = [
   {
     title: "Full Stack Developer",
-    company_name: "Softhrive",
-    icon: tekisky,
-    iconBg: "#383E56",
+    company_name: "Nevxora",
+    icon: logo,
+    iconBg: "#151030",
     date: "2025 - Present",
     points: [
       "Building and maintaining full-stack web applications using React, Node.js, Express, and MongoDB.",
